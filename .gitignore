@@ -1,0 +1,7 @@
+.venv/
+*.parquet
+*.geojson
+*.gpkg
+*.duckdb
+__pycache__/
+.env
