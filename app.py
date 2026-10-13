@@ -1,7 +1,10 @@
 import pydeck as pdk
 import streamlit as st
+import time
 import pandas as pd
 import geopandas as gpd
+
+t0 = time.time()
 
 # Configuration de la page web
 st.set_page_config(page_title="GEOINT - Climat", layout="wide")
@@ -43,6 +46,8 @@ def load_data():
 # Chargement des données
 with st.spinner("Chargement des données géospatiales..."):
     gdf_all, gdf_menaces, gdf_inondations = load_data()
+
+t1 = time.time()
 
 # Mise en page avec des colonnes pour les statistiques
 col1, col2, col3 = st.columns(3)
@@ -93,3 +98,9 @@ r = pdk.Deck(
 )
 
 st.pydeck_chart(r)
+
+t2 = time.time()
+
+# Affichage des chronomètres
+st.sidebar.write(f"⏱️ Chargement des données : {t1 - t0:.2f}s")
+st.sidebar.write(f"⏱️ Préparation Pydeck : {t2 - t1:.2f}s")
