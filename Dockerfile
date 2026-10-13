@@ -10,13 +10,16 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 4. On copie le code de l'application et les données calculées
+# 4 On copie le fichier de configuration de Streamlit
+COPY .streamlit/ .streamlit/
+
+# 5. On copie le code de l'application et les données calculées
 COPY app.py .
 COPY data/processed/ ./data/processed/
 
-# 5. On indique le port sur lequel Streamlit va communiquer
+# 6. On indique le port sur lequel Streamlit va communiquer
 EXPOSE 8501
 
-# 6. LA COMMANDE MAGIQUE !
+# 7. LA COMMANDE MAGIQUE !
 # C'est l'équivalent de ton "streamlit run app.py" mais adapté pour un serveur
 CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
