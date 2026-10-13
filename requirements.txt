@@ -1,6 +1,5 @@
 streamlit>=1.32.0
-folium>=0.16.0
-streamlit-folium>=0.18.0
 pandas>=2.2.0
 geopandas>=1.2.0
 pyarrow>=15.0.0
+pydeck>=0.8.0

@@ -1,8 +1,7 @@
+import pydeck as pdk
 import streamlit as st
 import pandas as pd
 import geopandas as gpd
-import folium
-from streamlit_folium import st_folium
 
 # Configuration de la page web
 st.set_page_config(page_title="GEOINT - Climat", layout="wide")
@@ -51,40 +50,46 @@ col1.metric("Bâtiments analysés", f"{len(gdf_all):,}")
 col2.metric("Infrastructures menacées", f"{len(gdf_menaces):,}")
 col3.metric("Zone d'étude", "Estuaire de la Loire")
 
-st.markdown("### 🗺️ Carte d'Analyse Interactive")
+st.subheader("🗺️ Carte de vulnérabilité (Rendu GPU WebGL)")
 
-# Initialisation de la carte Folium centrée sur Donges
-m = folium.Map(
-    location=[47.31, -2.15], 
-    zoom_start=13, 
-    tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-    attr="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+# 1. On définit la vue initiale (Centrée sur l'estuaire, avec un angle 3D)
+view_state = pdk.ViewState(
+    latitude=47.30, 
+    longitude=-2.07,
+    zoom=11,
+    pitch=45  # Permet d'incliner la carte en 3D !
 )
-# Couche 1 : Zone d'inondation (Bleu transparent)
-folium.GeoJson(
+
+# 2. Couche des zones d'inondation (Bleu transparent)
+layer_inondation = pdk.Layer(
+    "GeoJsonLayer",
     gdf_inondations,
-    name="Zones de submersion",
-    style_function=lambda x: {'fillColor': '#00a8ff', 'color': '#00a8ff', 'weight': 1, 'fillOpacity': 0.2}
-).add_to(m)
+    opacity=0.3,
+    stroked=False,
+    filled=True,
+    get_fill_color="[0, 100, 255, 100]",  # Code couleur RGBA
+)
 
-# Couche 2 : Bâtiments sains (Gris)
-folium.GeoJson(
-    gdf_all,
-    name="Infrastructures (Saines)",
-    style_function=lambda x: {'fillColor': '#a9a9a9', 'color': '#a9a9a9', 'weight': 0.5, 'fillOpacity': 0.4}
-).add_to(m)
+# 3. Couche des bâtiments menacés (Rouge vif)
+layer_batiments = pdk.Layer(
+    "GeoJsonLayer",
+    gdf_menaces,
+    opacity=0.8,
+    stroked=True,
+    get_line_color="[255, 255, 255]",
+    lineWidthMinPixels=1,
+    filled=True,
+    get_fill_color="[255, 0, 0, 200]",
+    pickable=True
+)
 
-# Couche 3 : Bâtiments en danger (Rouge vif avec infobulles cliquables)
-if not gdf_menaces.empty:
-    folium.GeoJson(
-        gdf_menaces,
-        name="Infrastructures (Vulnérables)",
-        style_function=lambda x: {'fillColor': '#ff4757', 'color': '#ff4757', 'weight': 2, 'fillOpacity': 0.8},
-        tooltip=folium.GeoJsonTooltip(fields=['nom'], aliases=['Bâtiment:'], localize=True)
-    ).add_to(m)
+# 4. Affichage dans Streamlit
+r = pdk.Deck(
+    layers=[layer_inondation, layer_batiments],
+    initial_view_state=view_state,
+    # Utilisation d'un fond de carte sombre gratuit pour faire ressortir les couleurs
+    map_style=pdk.map_styles.DARK, 
+    tooltip={"text": "Infrastructure critique"}
+)
 
-# Ajout d'un contrôleur pour activer/désactiver les couches
-folium.LayerControl().add_to(m)
-
-# Affichage de la carte dans Streamlit
-st_data = st_folium(m, width=1200, height=600, returned_objects=[])
+st.pydeck_chart(r)
