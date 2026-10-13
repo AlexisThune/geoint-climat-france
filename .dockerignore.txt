@@ -1,0 +1,12 @@
+# Dossiers virtuels Python
+.venv/
+venv/
+env/
+
+# Fichiers Git et IDE
+.git/
+.vscode/
+__pycache__/
+
+# Gros fichiers bruts inutiles en production
+data/raw/
