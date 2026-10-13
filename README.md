@@ -21,3 +21,40 @@ Plutôt que de télécharger les 200 Go de la carte mondiale d'Overture Maps, Du
 La carte ci-dessous met en évidence les infrastructures industrielles de la zone de Donges (en gris) croisées avec les zones à risque de submersion (en bleu). Les bâtiments directement menacés ressortent en rouge.
 
 ![Carte de vulnérabilité climatique - Estuaire de la Loire](assets/carte_vulnerabilite.png)
+
+## 🗺️ Architecture du Projet
+
+```mermaid
+graph TD
+    subgraph Sources de données
+        Overture[Overture Maps AWS S3]
+        Gouv[Data.gouv.fr GeoJSON]
+    end
+
+    subgraph Traitement Local / ETL
+        DuckDB[DuckDB Spatial]
+        GeoPandas[GeoPandas Python]
+        Parquet[(Données optimisées .parquet)]
+        
+        Overture -->|Extraction| DuckDB
+        Gouv -->|Nettoyage| GeoPandas
+        DuckDB --> Parquet
+        GeoPandas --> Parquet
+    end
+
+    subgraph CI/CD GitHub
+        Action[GitHub Actions]
+        Docker[Build Image Docker]
+        
+        Parquet -.->|git push| Action
+        Action --> Docker
+    end
+
+    subgraph Déploiement Scaleway
+        Registry[Container Registry]
+        Serverless[Serverless Containers App Streamlit]
+        
+        Docker -->|Push| Registry
+        Registry -->|Déploiement| Serverless
+    end
+```
