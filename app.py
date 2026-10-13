@@ -102,5 +102,5 @@ st.pydeck_chart(r)
 t2 = time.time()
 
 # Affichage des chronomètres
-st.sidebar.write(f"⏱️ Chargement des données : {t1 - t0:.2f}s")
-st.sidebar.write(f"⏱️ Préparation Pydeck : {t2 - t1:.2f}s")
+st.write(f"⏱️ Chargement des données : {t1 - t0:.2f}s")
+st.write(f"⏱️ Préparation Pydeck : {t2 - t1:.2f}s")
