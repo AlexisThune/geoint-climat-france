@@ -1,5 +1,4 @@
 .venv/
-*.parquet
 *.geojson
 *.gpkg
 *.duckdb
