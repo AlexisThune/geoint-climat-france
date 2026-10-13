@@ -55,6 +55,10 @@ col1.metric("Bâtiments analysés", f"{len(gdf_all):,}")
 col2.metric("Infrastructures menacées", f"{len(gdf_menaces):,}")
 col3.metric("Zone d'étude", "Estuaire de la Loire")
 
+# Place les chronomètres ICI, avant de dessiner la carte !
+t2 = time.time()
+st.info(f"⏱️ Backend Python -> Chargement : {t1 - t0:.2f}s | Préparation carte : {t2 - t1:.2f}s")
+
 st.subheader("🗺️ Carte de vulnérabilité (Rendu GPU WebGL)")
 
 # 1. On définit la vue initiale (Centrée sur l'estuaire, avec un angle 3D)
@@ -99,8 +103,3 @@ r = pdk.Deck(
 
 st.pydeck_chart(r)
 
-t2 = time.time()
-
-# Affichage des chronomètres
-st.write(f"⏱️ Chargement des données : {t1 - t0:.2f}s")
-st.write(f"⏱️ Préparation Pydeck : {t2 - t1:.2f}s")
