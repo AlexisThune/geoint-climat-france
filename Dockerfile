@@ -13,7 +13,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 4. On copie le code de l'application et les données calculées
 COPY app.py .
 COPY data/processed/ ./data/processed/
-COPY data/raw/ ./data/raw/
 
 # 5. On indique le port sur lequel Streamlit va communiquer
 EXPOSE 8501

@@ -1,0 +1,25 @@
+name: CI/CD Pipeline - Déploiement Scaleway
+
+# Se déclenche à chaque fois que tu fais un push sur la branche main
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: 🔑 Connexion au registre Scaleway
+        # GitHub utilise un secret caché pour se connecter sans dévoiler ton mot de passe
+        run: docker login rg.fr-par.scw.cloud -u nologin -p ${{ secrets.SCW_SECRET_KEY }}
+
+      - name: 🏗️ Intégration (CI) - Construire l'image Docker
+        run: docker build -t rg.fr-par.scw.cloud/geoint-projet/geoint-app:latest .
+
+      - name: 🚀 Déploiement (CD) - Pousser l'image sur Scaleway
+        run: docker push rg.fr-par.scw.cloud/geoint-projet/geoint-app:latest

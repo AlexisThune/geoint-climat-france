@@ -32,8 +32,7 @@ def load_data():
         gdf_menaces = gdf_menaces.set_crs('EPSG:4326', allow_override=True)
         
     # 3. Zones de submersion (Data.gouv.fr)
-    gdf_inondations = gpd.read_file('data/raw/234400034_tri-territoires-a-risque-important-dinondation-en-pays-de-la-loire.geojson')
-    
+    gdf_inondations = gpd.read_parquet('data/processed/inondations.parquet')    
     # On force le système de coordonnées pour la carte web (WGS84)
     gdf_all = gdf_all.set_crs('EPSG:4326', allow_override=True)
     if not gdf_menaces.empty:
